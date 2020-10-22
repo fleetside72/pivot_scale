@@ -12,7 +12,7 @@ BEGIN
             string_agg(cname || ' ' || dtype,', ' ORDER BY opos ASC) || 
             ', PRIMARY KEY ('||string_agg(cname,', ') FILTER (WHERE fkey = func)||'));' AS ddl,
             ---need to add a clause to exclude where the key is null
-            'INSERT INTO fc.'||func||' SELECT DISTINCT ' || string_agg(cname,', ' ORDER BY opos ASC) || ' FROM rlarp.osm_dev WHERE '||string_agg(cname,'||') FILTER (WHERE fkey = func)||' IS NOT NULL ON CONFLICT DO NOTHING' AS populate
+            'INSERT INTO fc.'||func||' SELECT DISTINCT ' || string_agg(cname,', ' ORDER BY opos ASC) || ' FROM rlarp.osm_dev WHERE '||string_agg(cname,'||') FILTER (WHERE fkey = func)||' IS NOT NULL ON CONFLICT DO NOTHING' AS pop
         FROM
             fc.target_meta
         WHERE
@@ -21,7 +21,7 @@ BEGIN
             func
     loop 
         EXECUTE format('%s',f.ddl);
-        EXECUTE format('%s',f.populate);
+        EXECUTE format('%s',f.pop);
     END LOOP;
 END;
 $$
