@@ -14,12 +14,13 @@ BEGIN
             ', PRIMARY KEY ('||string_agg(format('%I',cname),', ') FILTER (WHERE fkey = func)||'));' AS ddl,
             -------------------------------------------populate table-------------------------------------------------------------------------------------------------------
             ---need to add a clause to exclude where the key is null
-            'INSERT INTO fc.'||func||' SELECT DISTINCT ' || string_agg(format('%I',cname),', ' ORDER BY opos ASC) || ' FROM rlarp.osm_dev WHERE '||
+            'INSERT INTO fc.'||func||' SELECT DISTINCT ' || string_agg(format('%I',cname),', ' ORDER BY opos ASC) || ' FROM '||tname||' WHERE '||
             string_agg(format('%I',cname)||' IS NOT NULL ',' AND ') FILTER (WHERE fkey = func)||' ON CONFLICT DO NOTHING' AS pop
         FROM
             fc.target_meta
         GROUP BY
-            func
+            tname
+            ,func
         HAVING
             string_agg(cname,', ') FILTER (WHERE fkey = func) <> ''
     loop 
