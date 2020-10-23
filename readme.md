@@ -1,6 +1,8 @@
-will need to dynamically build sql for whatever layout the target table is in
+the basic assumption is a single sales table is available to work with that has a lot of related data that came from master data tables originally.
+the goal then is to break that back apart to whatever degree is necessary.
 
-name of table
-read columns
-assign meaning
-create a pretty name for display?
+
+* create a table fc.live as copied from target
+* run `target_info.sql` to populate the `fc.target_meta` table that holds all the columns and their roles
+* fill in flags on table `fc.target_meta` to show how the data is related
+* run `build_master_tables.sql` to generate foreign key based master data
