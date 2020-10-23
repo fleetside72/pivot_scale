@@ -13,8 +13,8 @@ SELECT
 FROM 
     information_schema.columns 
 WHERE 
-    table_name = 'osm_dev' 
-    AND table_schema = 'rlarp'
+    table_name = 'live' 
+    AND table_schema = 'fc'
 ON CONFLICT ON CONSTRAINT target_meta_pk DO UPDATE SET
     opos = EXCLUDED.opos
     ,dtype = EXCLUDED.dtype;
