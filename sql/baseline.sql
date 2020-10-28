@@ -1,3 +1,4 @@
+--a baseline period will have to be identified
 WITH
 baseline AS (
     -----------------------copy YTD sales---------------------------------------------------------------------
@@ -15,15 +16,13 @@ baseline AS (
     WHERE
         (
             --base period orders booked....
-            o.odate BETWEEN '2019-06-01' AND '2020-02-29'
+            [target_odate] BETWEEN [target_odate_from] AND [target_odate_to]
             --...or any open orders currently booked before cutoff....
-            OR (o.calc_status IN ('OPEN','BACKORDER') and o.odate < '2020-03-01')
+            OR ([status_flag] IN ([status_list]) and [target_date] <= [target_date_from])
             --...or anything that shipped in that period
-            OR o.fspr BETWEEN '2001' AND '2009'
+            OR ([target_sdate] BETWEEN [target_sdate_from] AND [target_sdate_to])
         )
-        AND fs_line = '41010'
-        AND calc_status <> 'CANCELED'
-        AND NOT (calc_status = 'CLOSED' AND flag = 'REMAINDER')
+        --be sure to pre-exclude unwanted items, like canceled orders, non-gross sales, and short-ships
     UNION ALL
     ---------option 1: fill in the rest of the year, with the prior years sales-sales----------------------------
     SELECT
@@ -36,11 +35,8 @@ baseline AS (
         LEFT OUTER JOIN gld ss ON
             greatest(least(o.sdate,gld.edat),gld.sdat) + interval '1 year' BETWEEN ss.sdat AND ss.edat
     WHERE
-        o.odate BETWEEN '2019-03-01' AND '2019-05-31'
-        AND fs_line = '41010'
-        AND calc_status <> 'CANCELED'
-        ------exclude actuals for now and use forecast to get the plug for the rest of the year
-        AND false
+        [target_odate] BETWEEN [target_odate_plug_from] AND [target_odate_plug_to]
+        --be sure to pre-exclude unwanted items, like canceled orders, non-gross sales, and short-ships
     UNION ALL
     --------option 2: fill in the remainder of the current year with current forecase-----------------------------
     SELECT
@@ -53,9 +49,8 @@ baseline AS (
         LEFT OUTER JOIN gld ss ON
             greatest(least(o.sdate,gld.edat),gld.sdat)  BETWEEN ss.sdat AND ss.edat
     WHERE
-        o.odate BETWEEN '2020-03-01' AND '2020-05-31'
-        AND fs_line = '41010'
-        AND calc_status <> 'CANCELED'
+        [target_odate] BETWEEN [target_odate_plug_from] AND [target_odate_plug_to]
+        AND false
 )
 -------------------copy the baseline just generated and increment all the dates by one year------------------------------------
 ,incr AS (
