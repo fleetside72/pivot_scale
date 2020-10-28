@@ -3,6 +3,7 @@ WITH
 baseline AS (
     -----------------------copy YTD sales---------------------------------------------------------------------
     SELECT
+        [nonversion]
         ,'baseline' "version"
         ,'actuals' iter
     FROM
@@ -26,6 +27,7 @@ baseline AS (
     UNION ALL
     ---------option 1: fill in the rest of the year, with the prior years sales-sales----------------------------
     SELECT
+        [nonversion]
         ,'baseline' "version"
         ,'plug' iter
     FROM
@@ -40,6 +42,7 @@ baseline AS (
     UNION ALL
     --------option 2: fill in the remainder of the current year with current forecase-----------------------------
     SELECT
+        [nonversion]
         ,'baseline' "version"
         ,'plug' iter
     FROM
@@ -54,7 +57,8 @@ baseline AS (
 )
 -------------------copy the baseline just generated and increment all the dates by one year------------------------------------
 ,incr AS (
-SELECT 
+SELECT
+    [nondate_columns]
     ,o.dcodat + interval '1 year'   --incremented
     ,o.ddqdat + interval '1 year'   --incremented
     ,o.dhidat + interval '1 year'   --incremented

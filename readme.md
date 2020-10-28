@@ -6,7 +6,7 @@ the basic assumption is a single sales table is available to work with that has 
 the goal then is to break that back apart to whatever degree is necessary.
 
 * _**run**_ `schema.sql` and `perd.sql` to setup basic tables
-* create a table fc.live as copied from target
+* create a table fc.live as copied from target (will need to have columns `version` and `iter` added if not existing)
 * _**run**_ `target_info.sql` to populate the `fc.target_meta` table that holds all the columns and their roles
 * fill in flags on table `fc.target_meta` to show how the data is related
 * _**run**_ `build_master_tables.sql` to generate foreign key based master data
@@ -16,3 +16,4 @@ baseline
 ----------------------------------------------------------------------------------------------------------------------------------------------------
 * copy history and increment by year to form a baseline
     * need to be able to handle order/ship dates generically
+    * need to build the baseline sql
