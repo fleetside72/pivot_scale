@@ -2,7 +2,7 @@ WITH
 baseline AS (
     -----------------------copy YTD sales---------------------------------------------------------------------
     SELECT
-        ,'15mo' "version"
+        ,'baseline' "version"
         ,'actuals' iter
     FROM
         rlarp.osm_dev o
@@ -27,8 +27,8 @@ baseline AS (
     UNION ALL
     ---------option 1: fill in the rest of the year, with the prior years sales-sales----------------------------
     SELECT
-        ,'actuals' "version"
-        ,'actuals_plug' iter
+        ,'baseline' "version"
+        ,'plug' iter
     FROM
         rlarp.osm_dev o
         LEFT OUTER JOIN gld ON
@@ -44,8 +44,8 @@ baseline AS (
     UNION ALL
     --------option 2: fill in the remainder of the current year with current forecase-----------------------------
     SELECT
-        ,'actuals' "version"
-        ,'forecast_plug' iter
+        ,'baseline' "version"
+        ,'plug' iter
     FROM
         rlarp.osmp_dev o
         LEFT OUTER JOIN gld ON
@@ -69,7 +69,7 @@ SELECT
     ,o.rseas + 1                    --incremented
     ,o.sdate + interval '1 year'    --incremented
     ,o.sseas + 1                    --incremented
-    ,'b21' "version"
+    ,'baseline' "version"
     ,'copy' iter
 FROM 
     baseline o
