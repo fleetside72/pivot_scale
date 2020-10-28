@@ -16,4 +16,4 @@ baseline
 ----------------------------------------------------------------------------------------------------------------------------------------------------
 * copy history and increment by year to form a baseline
     * need to be able to handle order/ship dates generically
-    * need to build the baseline sql
+    * need to build the baseline sql, column lists will have to be generated dynamically with modifications (list all the dates + 1 year)
