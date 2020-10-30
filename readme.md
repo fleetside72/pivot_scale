@@ -12,8 +12,18 @@ the goal then is to break that back apart to whatever degree is necessary.
 * _**run**_ `build_master_tables.sql` to generate foreign key based master data
 
 
-baseline
+routes
 ----------------------------------------------------------------------------------------------------------------------------------------------------
-* copy history and increment by year to form a baseline
-    * need to be able to handle order/ship dates generically
-    * need to build the baseline sql, column lists will have to be generated dynamically with modifications (list all the dates + 1 year)
+* all routes would be tied to an underlying sql that builds the incremental rows
+* that piece of sql will have to be build based on the particular sales layout
+    * **columns:** a function to build the columns for each route
+    * **where** a function to build the where clause will be required for each route
+    * the result of above will get piped into a master function that build the final sql
+    * the master function will need to be called to build the sql statements into files of the project
+
+
+route baseline
+----------------------------------------------------------------------------------------------------------------------------------------------------
+* forecast = baseline (copied verbatim from actuals and increment the dates) + diffs. if orders are canceled this will show up as differ to baseline
+* regular updates to baseline may be required to keep up with canceled/altered orders
+* copy some period of actual sales and increment all the dates to serve as a baseline forecast
