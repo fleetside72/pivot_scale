@@ -27,3 +27,8 @@ route baseline
 * forecast = baseline (copied verbatim from actuals and increment the dates) + diffs. if orders are canceled this will show up as differ to baseline
 * regular updates to baseline may be required to keep up with canceled/altered orders
 * copy some period of actual sales and increment all the dates to serve as a baseline forecast
+
+to-do:
+* build the column lists for baseline
+* build the where clause for baseline
+* build the column lists for baseline_increment
