@@ -8,16 +8,10 @@ baseline AS (
         ,'actuals' iter
     FROM
         rlarp.osm_dev o
-        --snap the ship dates of the historic fiscal period
-        LEFT OUTER JOIN gld ON
-            gld.fspr = o.fspr
-        --get the shipping season for open orders based on the snapped date
-        LEFT OUTER JOIN gld ss ON
-            greatest(least(o.sdate,gld.edat),gld.sdat) BETWEEN ss.sdat AND ss.edat
     WHERE
         (
             --base period orders booked....
-            [target_odate] BETWEEN [target_odate_from] AND [target_odate_to]
+            [order_field_name] BETWEEN [target_odate_from] AND [target_odate_to]
             --...or any open orders currently booked before cutoff....
             OR ([status_flag] IN ([status_list]) and [target_date] <= [target_date_from])
             --...or anything that shipped in that period
