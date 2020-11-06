@@ -9,6 +9,7 @@ CREATE TABLE fc.target_meta (
     ,fkey   text
     ,pretty text
     ,dtype  text
+    ,mastcol text
 );
 
 --ALTER TABLE fc.target_meta DROP CONSTRAINT IF EXISTS target_meta_pk;
