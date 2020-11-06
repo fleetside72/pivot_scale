@@ -32,3 +32,6 @@ to-do:
 * build the column lists for baseline
 * build the where clause for baseline
 * build the column lists for baseline_increment
+    * problem: how will the incremented order season get updated, adding an interval won't work
+        * a table fc.odate, has been built, but it is incomplete, a setup function filling in these date-keyed tables could be setup
+        * if a table is date-keyed, fc.perd could be targeted to fill in the gaps
