@@ -35,3 +35,5 @@ to-do:
     * problem: how will the incremented order season get updated, adding an interval won't work
         * a table fc.odate, has been built, but it is incomplete, a setup function filling in these date-keyed tables could be setup
         * if a table is date-keyed, fc.perd could be targeted to fill in the gaps
+    * the target sales data has to map have concepts like order_date, and the application needs to know which col is order date
+        * add column called application hook
