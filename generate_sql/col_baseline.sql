@@ -29,6 +29,8 @@ SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'order_date') INTO _orde
 SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'ship_date') INTO _ship_date;
 SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'order_status') INTO _order_status;
 
+--------------------------------------clone the actual baseline-----------------------------------------------
+
 SELECT 
 $a$SELECT
     $a$::text||    
@@ -53,6 +55,10 @@ INTO
     _ytdbody;
 
 --RAISE NOTICE '%', _ytdbody;
+
+
+------------------------------------pull a plug from actuals to create a full year baseline------------------
+
 SELECT
 $$
     ,'baseline' "version"
@@ -69,6 +75,8 @@ WHERE
 $$ 
 INTO
     _actpy;
+
+------------------------------stack the sql into the final format------------------------------------------------
 
 SELECT
     _ytdbody
