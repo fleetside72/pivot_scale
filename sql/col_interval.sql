@@ -7,7 +7,7 @@ BEGIN
 -------------------------------build a column list----------------------------------------
 SELECT 
     string_agg(
-        format('%I',cname) || CASE WHEN func IN ('odate','sdate') THEN ' + interval ''1 year''' ELSE '' END,E'\n,' ORDER BY opos ASC)
+        format('%I',cname) || CASE WHEN func IN ('odate','sdate') AND dtype = 'date' THEN ' + interval ''1 year''' ELSE '' END,E'\n,' ORDER BY opos ASC)
 INTO
     clist
 FROM 
