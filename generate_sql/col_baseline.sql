@@ -1,11 +1,13 @@
 DO
-$$
+$func$
 DECLARE
     _clist text;
     _ytdbody text;
     _order_date text;
     _ship_date text;
     _order_status text;
+    _actpy text;
+    _sql text;
 
 BEGIN
 
@@ -51,10 +53,33 @@ INTO
     _ytdbody;
 
 --RAISE NOTICE '%', _ytdbody;
+SELECT
+$$
+    ,'baseline' "version"
+    ,'plug' iter
+FROM
+    rlarp.osm_dev o
+    LEFT OUTER JOIN gld ON
+        gld.fspr = o.fspr
+    LEFT OUTER JOIN gld ss ON
+        greatest(least(o.sdate,gld.edat),gld.sdat) + interval '1 year' BETWEEN ss.sdat AND ss.edat
+WHERE
+    [target_odate] BETWEEN [target_odate_plug_from] AND [target_odate_plug_to]
+    --be sure to pre-exclude unwanted items, like canceled orders, non-gross sales, and short-ships
+$$ 
+INTO
+    _actpy;
 
-INSERT INTO fc.sql SELECT 'baseline', _ytdbody ON CONFLICT ON CONSTRAINT sql_pkey  DO UPDATE SET t = EXCLUDED.t;
+SELECT
+    _ytdbody
+    ||$$UNION ALL
+    $$||_actpy
+INTO
+    _sql;
+
+INSERT INTO fc.sql SELECT 'baseline', _sql ON CONFLICT ON CONSTRAINT sql_pkey  DO UPDATE SET t = EXCLUDED.t;
 
 END
-$$;
+$func$;
 
-SELECT * FROM fc.sql;
+---SELECT * FROM fc.sql;
