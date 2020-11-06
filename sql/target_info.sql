@@ -3,13 +3,14 @@ BEGIN;
 INSERT INTO
     fc.target_meta
 SELECT 
-    table_name
+    table_schema||'.'||table_name
     ,column_name
     ,ordinal_position
     ,'doc'::text func
     ,null::text fkey        --foreign key to a master table
     ,null::text pretty
     ,data_type::text dtype
+    ,column_name mastcol
 FROM 
     information_schema.columns 
 WHERE 
