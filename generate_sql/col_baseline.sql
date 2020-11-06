@@ -2,6 +2,7 @@ DO
 $func$
 DECLARE
     _clist text;
+    _clist_inc text;
     _ytdbody text;
     _order_date text;
     _ship_date text;
@@ -18,6 +19,18 @@ SELECT
     string_agg(format('%I',cname),E'\n    ,' ORDER BY opos ASC)
 INTO
     _clist
+FROM 
+    fc.target_meta 
+WHERE 
+    func NOT IN ('version');
+
+---------------------------build column to increment dates--------------------------------
+
+SELECT 
+    string_agg(
+        format('%I',cname) || CASE WHEN func IN ('odate','sdate') AND dtype = 'date' THEN ' + interval ''1 year''' ELSE '' END,E'\n    ,' ORDER BY opos ASC)
+INTO
+    _clist_inc
 FROM 
     fc.target_meta 
 WHERE 
@@ -60,17 +73,15 @@ INTO
 ------------------------------------pull a plug from actuals to create a full year baseline------------------
 
 SELECT
+$$SELECT
+    $$||_clist_inc||
 $$
     ,'baseline' "version"
     ,'plug' iter
 FROM
     rlarp.osm_dev o
-    LEFT OUTER JOIN gld ON
-        gld.fspr = o.fspr
-    LEFT OUTER JOIN gld ss ON
-        greatest(least(o.sdate,gld.edat),gld.sdat) + interval '1 year' BETWEEN ss.sdat AND ss.edat
 WHERE
-    [target_odate] BETWEEN [target_odate_plug_from] AND [target_odate_plug_to]
+    $$||_order_date||$$ BETWEEN [app_plug_fromdate] AND [app_plug_todate]
     --be sure to pre-exclude unwanted items, like canceled orders, non-gross sales, and short-ships
 $$ 
 INTO
@@ -79,9 +90,9 @@ INTO
 ------------------------------stack the sql into the final format------------------------------------------------
 
 SELECT
-    _ytdbody
-    ||$$UNION ALL
-    $$||_actpy
+    _ytdbody||
+$$UNION ALL
+$$||_actpy
 INTO
     _sql;
 
