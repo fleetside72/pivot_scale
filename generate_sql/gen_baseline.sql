@@ -50,7 +50,7 @@ $a$SELECT
     $a$::text||    
     _clist||
     $b$
-    ,'baseline' "version"
+    ,'forecast_name' "version"
     ,'actuals' iter
 FROM
     rlarp.osm_dev o
@@ -77,7 +77,7 @@ SELECT
 $$SELECT
     $$||_clist_inc||
 $$
-    ,'baseline' "version"
+    ,'forecast_name' "version"
     ,'plug' iter
 FROM
     rlarp.osm_dev o
@@ -91,13 +91,20 @@ INTO
 ------------------------------copy a full year and increment by 1 year for the baseline-------------------------
 
 SELECT
-$a$SELECT
+$a$
+INSERT INTO 
+    fc.live
+SELECT
     $a$||_clist_inc||
-    $b$'forecast' "versoin",
+    $b$
+    'forecast_name' "version",
     'baseline' iter
 FROM
     baseline
-$b$
+WHERE
+    $b$||_order_date||$c$ + interval '1 year' >= $c$||'[app_first_order_date_year]'
+    --the final forecast baseline should have orders greater than or equal to the
+    --start of the year since new orders is the intended forecast
 INTO
     _baseline;
     
@@ -105,7 +112,8 @@ INTO
 ------------------------------stack the sql into the final format------------------------------------------------
 
 SELECT
-$$WITH
+$$DELETE FROM fc.live WHERE version = 'forecast_name';
+WITH
 baseline AS (
 $$||_ytdbody||
 $$UNION ALL
