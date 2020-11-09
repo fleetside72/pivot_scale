@@ -9,6 +9,7 @@ DECLARE
     _order_status text;
     _actpy text;
     _sql text;
+    _baseline text;
 
 BEGIN
 
@@ -87,12 +88,31 @@ $$
 INTO
     _actpy;
 
+------------------------------copy a full year and increment by 1 year for the baseline-------------------------
+
+SELECT
+$a$SELECT
+    $a$||_clist_inc||
+    $b$'forecast' "versoin",
+    'baseline' iter
+FROM
+    baseline
+$b$
+INTO
+    _baseline;
+    
+
 ------------------------------stack the sql into the final format------------------------------------------------
 
 SELECT
-    _ytdbody||
+$$WITH
+baseline AS (
+$$||_ytdbody||
 $$UNION ALL
 $$||_actpy
+||$$)
+$$
+||_baseline
 INTO
     _sql;
 
