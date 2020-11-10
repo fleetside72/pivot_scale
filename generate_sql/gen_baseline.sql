@@ -97,8 +97,8 @@ INSERT INTO
 SELECT
     $a$||_clist_inc||
     $b$
-    'forecast_name' "version",
-    'baseline' iter
+    ,'forecast_name' "version"
+    ,'baseline' iter
 FROM
     baseline
 WHERE
