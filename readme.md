@@ -29,15 +29,16 @@ route baseline
 * copy some period of actual sales and increment all the dates to serve as a baseline forecast
 
 TO-DO:
-- [ ] join to period tables to populate season; requires variance number oof table joins, based on howmany date functions there are 🙄
+- [x] join to period tables to populate season; requires variance number oof table joins, based on howmany date functions there are 🙄
+- [ ] some of the app parameters can be consolidated
 - [ ] setup something to fill in sql parameters to do testing on the function
 
 running problem list
 ----------------------------------------------------------------------------------------------------------------------------------------------------
 * baseline route
-    - [ ] problem: how will the incremented order season get updated, adding an interval won't work
+    - [x] problem: how will the incremented order season get updated, adding an interval won't work
         * a table fc.odate, has been built, but it is incomplete, a setup function filling in these date-keyed tables could be setup
         * if a table is date-keyed, fc.perd could be targeted to fill in the gaps by mapping the associated column names
-    - [ ] problem: the target sales data has to map have concepts like order_date, and the application needs to know which col is order date
+    - [x] problem: the target sales data has to map have concepts like order_date, and the application needs to know which col is order date
         * add column called application hook
     - [ ] there is not currently any initial grouping to limit excess data from all the document# scenarios
