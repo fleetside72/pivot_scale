@@ -10,8 +10,9 @@ DECLARE
     _actpy text;
     _sql text;
     _baseline text;
-    _date_funcs text[];
+    _date_funcs jsonb;
     _perd_joins text;
+    _interval interval;
 
 BEGIN
 
@@ -19,12 +20,16 @@ BEGIN
 SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'order_date') INTO _order_date;
 SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'ship_date') INTO _ship_date;
 SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'order_status') INTO _order_status;
-SELECT array_agg(func) INTO _date_funcs FROM fc.target_meta WHERE dtype = 'date' AND fkey is NOT null;
+--the target interval
+SELECT interval '1 year' INTO _interval;
+SELECT jsonb_agg(func) INTO _date_funcs FROM fc.target_meta WHERE dtype = 'date' AND fkey is NOT null;
+--create table join for each date based func in target_meta joining to fc.perd static table
+--the join, though, should be based on the target date, which is needs an interval added to get to the target
 SELECT
     string_agg(
         'LEFT OUTER JOIN fc.perd '||func||' ON'||
         $$
-        $$||'live.'||fkey||' <@ '||func||'.drange'
+        $$||'(o.'||fkey||' + interval '||format('%L',_interval) ||' ) <@ '||func||'.drange'
     ,E'\n')
 INTO
     _perd_joins
@@ -50,7 +55,15 @@ WHERE
 
 SELECT 
     string_agg(
-        format('%I',cname) || CASE WHEN func IN ('odate','sdate') AND dtype = 'date' THEN ' + interval ''1 year''' ELSE '' END,E'\n    ,' ORDER BY opos ASC)
+        format('%I',cname) || 
+        ---instead of directly incrementing the column here, do it in the table join to fc.perd and use that modified date
+        CASE 
+            WHEN _date_funcs ? func AND dtype = 'date'
+            THEN ' + interval ''1 year''' 
+            ELSE '' 
+        END
+        ,E'\n    ,' ORDER BY opos ASC
+    )
 INTO
     _clist_inc
 FROM 
@@ -63,25 +76,25 @@ WHERE
 --------------------------------------clone the actual baseline-----------------------------------------------
 
 SELECT 
-$a$SELECT
-    $a$::text||    
+$$SELECT
+    $$::text||    
     _clist||
-    $b$
+    $$
     ,'forecast_name' "version"
     ,'actuals' iter
 FROM
-    fc.live o$b$||E'\n'||_perd_joins||$c$
+    fc.live o
 WHERE
     (
         --base period orders booked....
-        $c$||_order_date||$d$ BETWEEN [app_baseline_from_date] AND [app_baseline_to_date]
+        $$||_order_date||$$ BETWEEN [app_baseline_from_date] AND [app_baseline_to_date]
         --...or any open orders currently booked before cutoff....
-        OR ($d$||_order_status||$e$ IN ([app_openstatus_code]) and $e$||_order_date||$f$ <= [app_openorder_cutoff])
+        OR ($$||_order_status||$$ IN ([app_openstatus_code]) and $$||_order_date||$$ <= [app_openorder_cutoff])
         --...or anything that shipped in that period
-        OR ($f$||_ship_date||$g$ BETWEEN [app_baseline_from_date] AND [app_baseline_to_date])
+        OR ($$||_ship_date||$$ BETWEEN [app_baseline_from_date] AND [app_baseline_to_date])
     )
     --be sure to pre-exclude unwanted items, like canceled orders, non-gross sales, and short-ships
-$g$::text
+$$::text
 INTO
     _ytdbody;
 
@@ -97,7 +110,7 @@ $$
     ,'forecast_name' "version"
     ,'plug' iter
 FROM
-    fc.live o
+    fc.live o$$||E'\n'||_perd_joins||$$
 WHERE
     $$||_order_date||$$ BETWEEN [app_plug_fromdate] AND [app_plug_todate]
     --be sure to pre-exclude unwanted items, like canceled orders, non-gross sales, and short-ships
@@ -108,18 +121,17 @@ INTO
 ------------------------------copy a full year and increment by 1 year for the baseline-------------------------
 
 SELECT
-$a$
-INSERT INTO 
+$$INSERT INTO 
     fc.live
 SELECT
-    $a$||_clist_inc||
-    $b$
+    $$||_clist_inc||
+    $$
     ,'forecast_name' "version"
     ,'baseline' iter
 FROM
-    baseline
+    baseline o$$||E'\n'||_perd_joins||$$
 WHERE
-    $b$||_order_date||$c$ + interval '1 year' >= $c$||'[app_first_order_date_year]'
+    $$||_order_date||$$ + interval '1 year' >= $$||'[app_first_order_date_year]'
     --the final forecast baseline should have orders greater than or equal to the
     --start of the year since new orders is the intended forecast
 INTO
@@ -136,8 +148,7 @@ $$||_ytdbody||
 $$UNION ALL
 $$||_actpy
 ||$$)
-$$
-||_baseline
+$$||_baseline
 INTO
     _sql;
 
