@@ -29,7 +29,7 @@ SELECT
     string_agg(
         'LEFT OUTER JOIN fc.perd '||func||' ON'||
         $$
-        $$||'(o.'||fkey||' + interval '||format('%L',_interval) ||' ) <@ '||func||'.drange'
+        $$||'(o.'||fkey||' + interval '||format('%L',_interval) ||' )::date <@ '||func||'.drange'
     ,E'\n')
 INTO
     _perd_joins
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS fc.sql(cmd text PRIMARY KEY, t text );
 
 -------------------------------build a column list-----------------------------------------
 SELECT 
-    string_agg(format('%I',cname),E'\n    ,' ORDER BY opos ASC)
+    string_agg('o.'||format('%I',cname),E'\n    ,' ORDER BY opos ASC)
 INTO
     _clist
 FROM 
@@ -55,19 +55,29 @@ WHERE
 
 SELECT 
     string_agg(
-        format('%I',cname) || 
-        ---instead of directly incrementing the column here, do it in the table join to fc.perd and use that modified date
-        CASE 
-            WHEN _date_funcs ? func AND dtype = 'date'
-            THEN ' + interval ''1 year''' 
-            ELSE '' 
+        CASE
+            --if you're dealing with a date function...
+            WHEN _date_funcs ? func THEN
+                CASE 
+                    --...but it's not the date itself...
+                    WHEN fkey IS NULL THEN 
+                        --...pull the associated date field from perd table
+                        func||'.'||m.dateref
+                    --...and it's the primary key date...
+                    ELSE 
+                        --use the date key but increment by the target interval
+                        --this assumes that the primary key for the func is a date, but it has to be or it wont join anyways
+                        'o.'||fkey||' + interval '||format('%L',_interval)
+                END
+            ELSE
+                'o.'||format('%I',cname)
         END
         ,E'\n    ,' ORDER BY opos ASC
     )
 INTO
     _clist_inc
 FROM 
-    fc.target_meta 
+    fc.target_meta m
 WHERE 
     func NOT IN ('version');
 
@@ -131,9 +141,9 @@ SELECT
 FROM
     baseline o$$||E'\n'||_perd_joins||$$
 WHERE
-    $$||_order_date||$$ + interval '1 year' >= $$||'[app_first_order_date_year]'
-    --the final forecast baseline should have orders greater than or equal to the
-    --start of the year since new orders is the intended forecast
+    $$||_order_date||' >= [app_first_forecast_date]'||$$
+    OR $$||_ship_date||' >= [app_first_forecast_date]'
+    --any orders in the forecast period, or any sales in the forecast period (from open orders)
 INTO
     _baseline;
     
