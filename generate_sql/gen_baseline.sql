@@ -10,12 +10,33 @@ DECLARE
     _actpy text;
     _sql text;
     _baseline text;
+    _date_funcs text[];
+    _perd_joins text;
 
 BEGIN
 
+-----------------populate application variables--------------------------------------------
+SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'order_date') INTO _order_date;
+SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'ship_date') INTO _ship_date;
+SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'order_status') INTO _order_status;
+SELECT array_agg(func) INTO _date_funcs FROM fc.target_meta WHERE dtype = 'date' AND fkey is NOT null;
+SELECT
+    string_agg(
+        'LEFT OUTER JOIN fc.perd '||func||' ON'||
+        $$
+        $$||'live.'||fkey||' <@ '||func||'.drange'
+    ,E'\n')
+INTO
+    _perd_joins
+FROM 
+    fc.target_meta 
+WHERE 
+    dtype = 'date' 
+    AND fkey IS NOT NULL;
+
 CREATE TABLE IF NOT EXISTS fc.sql(cmd text PRIMARY KEY, t text );
 
--------------------------------build a column list----------------------------------------
+-------------------------------build a column list-----------------------------------------
 SELECT 
     string_agg(format('%I',cname),E'\n    ,' ORDER BY opos ASC)
 INTO
@@ -25,7 +46,7 @@ FROM
 WHERE 
     func NOT IN ('version');
 
----------------------------build column to increment dates--------------------------------
+---------------------------build column to increment dates---------------------------------
 
 SELECT 
     string_agg(
@@ -39,10 +60,6 @@ WHERE
 
 --RAISE NOTICE 'build list: %',clist;
 
-SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'order_date') INTO _order_date;
-SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'ship_date') INTO _ship_date;
-SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'order_status') INTO _order_status;
-
 --------------------------------------clone the actual baseline-----------------------------------------------
 
 SELECT 
@@ -53,18 +70,18 @@ $a$SELECT
     ,'forecast_name' "version"
     ,'actuals' iter
 FROM
-    rlarp.osm_dev o
+    fc.live o$b$||E'\n'||_perd_joins||$c$
 WHERE
     (
         --base period orders booked....
-        $b$||_order_date||$c$ BETWEEN [app_baseline_from_date] AND [app_baseline_to_date]
+        $c$||_order_date||$d$ BETWEEN [app_baseline_from_date] AND [app_baseline_to_date]
         --...or any open orders currently booked before cutoff....
-        OR ($c$||_order_status||$d$ IN ([app_openstatus_code]) and $d$||_order_date||$e$ <= [app_openorder_cutoff])
+        OR ($d$||_order_status||$e$ IN ([app_openstatus_code]) and $e$||_order_date||$f$ <= [app_openorder_cutoff])
         --...or anything that shipped in that period
-        OR ($e$||_ship_date||$f$ BETWEEN [app_baseline_from_date] AND [app_baseline_to_date])
+        OR ($f$||_ship_date||$g$ BETWEEN [app_baseline_from_date] AND [app_baseline_to_date])
     )
     --be sure to pre-exclude unwanted items, like canceled orders, non-gross sales, and short-ships
-$f$::text
+$g$::text
 INTO
     _ytdbody;
 
@@ -80,7 +97,7 @@ $$
     ,'forecast_name' "version"
     ,'plug' iter
 FROM
-    rlarp.osm_dev o
+    fc.live o
 WHERE
     $$||_order_date||$$ BETWEEN [app_plug_fromdate] AND [app_plug_todate]
     --be sure to pre-exclude unwanted items, like canceled orders, non-gross sales, and short-ships
