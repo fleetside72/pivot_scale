@@ -29,6 +29,7 @@ route baseline
 * copy some period of actual sales and increment all the dates to serve as a baseline forecast
 
 TO-DO:
+- [ ] join to period tables to populate season; requires variance number oof table joins, based on howmany date functions there are 🙄
 - [ ] setup something to fill in sql parameters to do testing on the function
 
 running problem list

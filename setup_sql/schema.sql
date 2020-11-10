@@ -2,15 +2,16 @@
 
 DROP TABLE IF EXISTS fc.target_meta;
 CREATE TABLE fc.target_meta (
-    tname   text
-    ,cname  text
-    ,opos   int
-    ,func   text
-    ,fkey   text
-    ,pretty text
-    ,dtype  text
-    ,mastcol text
-    ,appcol text
+    tname       text
+    ,cname      text
+    ,opos       int
+    ,func       text
+    ,fkey       text
+    ,pretty     text
+    ,dtype      text
+    ,mastcol    text
+    ,appcol     text
+    ,dateref    text
 );
 
 --ALTER TABLE fc.target_meta DROP CONSTRAINT IF EXISTS target_meta_pk;
@@ -26,3 +27,4 @@ COMMENT ON COLUMN fc.target_meta.pretty IS 'the presentation name of the column'
 COMMENT ON COLUMN fc.target_meta.dtype IS 'data type of the sales table column';
 COMMENT ON COLUMN fc.target_meta.mastcol IS 'associated field from the master data table if it is different (oseas would refer to ssyr in fc.perd)';
 COMMENT ON COLUMN fc.target_meta.appcol IS 'supply column name to be used for application variables - (specifcy the order date column)';
+COMMENT ON COLUMN fc.target_meta.dateref IS 'reference to the relevant hard coded perd table column for dates';
