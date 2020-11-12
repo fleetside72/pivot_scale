@@ -3,3 +3,5 @@
 route_sql/*
 old_*
 node_modules/
+.env
+*.pem
