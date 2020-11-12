@@ -61,6 +61,15 @@ server.get('/baseline', bodyParser.json(), function(req, res) {
         }
     });
 
+    //list of parameters that will need to be supplied from the app
+    //app_baseline_from_date
+    //app_baseline_to_date
+    //app_first_forecast_date
+    //app_openorder_cutoff
+    //app_openstatus_code
+    //app_plug_fromdate
+    //app_plug_todate
+
     var callback = function(arg) {
         sql = arg;
 
@@ -68,6 +77,8 @@ server.get('/baseline', bodyParser.json(), function(req, res) {
         console.log(req.body);
         //parse the where clause into the main sql statement
         //sql = sql.replace(new RegExp("where_clause", 'g'), w)
+        sql = sql.replace(new RegExp("[app_baseline_from_date]",'g'), "$1");
+        args.push(req.body.app_baseline_from_date);
         //execute the sql and send the result
         console.log(sql);
         //Postgres.FirstRow(sql, [], res)

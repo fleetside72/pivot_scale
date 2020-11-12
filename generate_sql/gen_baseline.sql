@@ -14,6 +14,16 @@ DECLARE
     _perd_joins text;
     _interval interval;
 
+/*----------------parameters listing--------------
+app_baseline_from_date
+app_baseline_to_date
+app_first_forecast_date
+app_openorder_cutoff
+app_openstatus_code
+app_plug_fromdate
+app_plug_todate
+------------------------------------------------*/
+
 BEGIN
 
 -----------------populate application variables--------------------------------------------
