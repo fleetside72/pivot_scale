@@ -51,6 +51,15 @@ server.get('/baseline', bodyParser.json(), function(req, res) {
 
     var sql = "";
     var path = './route_sql/baseline.sql';
+    var args = [];
+
+    var app_baseline_from_date = '2020-06-01';
+    //app_baseline_to_date
+    //app_first_forecast_date
+    //app_openorder_cutoff
+    //app_openstatus_code
+    //app_plug_fromdate
+    //app_plug_todate
 
     fs.readFile(path, 'utf8', function(err, data) {
         if (!err) {
@@ -73,14 +82,15 @@ server.get('/baseline', bodyParser.json(), function(req, res) {
     var callback = function(arg) {
         sql = arg;
 
-        console.log(new Date().toISOString() + "-------------------------get scenario:------------------------------")
+        console.log(new Date().toISOString() + "-------------------------baseline build-----------------------------")
         console.log(req.body);
         //parse the where clause into the main sql statement
         //sql = sql.replace(new RegExp("where_clause", 'g'), w)
-        sql = sql.replace(new RegExp("[app_baseline_from_date]",'g'), "$1");
+        sql = sql.replace(new RegExp("app_baseline_from_date"), app_baseline_from_date);
         args.push(req.body.app_baseline_from_date);
         //execute the sql and send the result
         console.log(sql);
+        res.send(sql); 
         //Postgres.FirstRow(sql, [], res)
     };
 })
