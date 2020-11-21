@@ -53,14 +53,6 @@ server.get('/baseline', bodyParser.json(), function(req, res) {
     var path = './route_sql/baseline.sql';
     var args = [];
 
-    var app_baseline_from_date = '2020-06-01';
-    //app_baseline_to_date
-    //app_first_forecast_date
-    //app_openorder_cutoff
-    //app_openstatus_code
-    //app_plug_fromdate
-    //app_plug_todate
-
     fs.readFile(path, 'utf8', function(err, data) {
         if (!err) {
             callback(data);
@@ -78,6 +70,8 @@ server.get('/baseline', bodyParser.json(), function(req, res) {
     //app_openstatus_code
     //app_plug_fromdate
     //app_plug_todate
+
+    var app_baseline_from_date = '2020-06-01';
 
     var callback = function(arg) {
         sql = arg;
