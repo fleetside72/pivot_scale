@@ -72,6 +72,12 @@ server.get('/baseline', bodyParser.json(), function(req, res) {
     //app_plug_todate
 
     var app_baseline_from_date = '2020-06-01';
+    var app_baseline_to_date = '2020-09-30';
+    var app_first_forecast_date = '2021-06-01';
+    var app_openorder_cutoff = '2020-09-30';
+    var app_openstatus_code = "'OPEN','BACKORDER'";
+    var app_plug_fromdate = '2020-10-01'; 
+    var app_plug_todate = '2020-05-30';
 
     var callback = function(arg) {
         sql = arg;
@@ -81,8 +87,14 @@ server.get('/baseline', bodyParser.json(), function(req, res) {
         //parse the where clause into the main sql statement
         //sql = sql.replace(new RegExp("where_clause", 'g'), w)
         sql = sql.replace(new RegExp("app_baseline_from_date"), app_baseline_from_date);
-        args.push(req.body.app_baseline_from_date);
+        sql = sql.replace(new RegExp("app_baseline_to_date"), app_baseline_from_date);
+        sql = sql.replace(new RegExp("app_first_forecast_date"), app_first_forecast_date);
+        sql = sql.replace(new RegExp("app_openorder_cutoff"), app_baseline_from_date);
+        sql = sql.replace(new RegExp("app_openstatus_code"), app_baseline_from_date);
+        sql = sql.replace(new RegExp("app_plug_fromdate"), app_plug_fromdate);
+        sql = sql.replace(new RegExp("app_plug_todate"), app_plug_todate);
         //execute the sql and send the result
+        args.push(req.body.app_baseline_from_date);
         console.log(sql);
         res.send(sql); 
         //Postgres.FirstRow(sql, [], res)
