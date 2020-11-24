@@ -77,7 +77,7 @@ SELECT
                     ELSE 
                         --use the date key but increment by the target interval
                         --this assumes that the primary key for the func is a date, but it has to be or it wont join anyways
-                        'o.'||fkey||' + interval '||format('%L',_interval)
+                        'o.'||fkey||' + interval '||format('%L',_interval) ||' AS '||fkey
                 END
             ELSE
                 'o.'||format('%I',cname)
@@ -107,11 +107,11 @@ FROM
 WHERE
     (
         --base period orders booked....
-        $$||_order_date||$$ BETWEEN [app_baseline_from_date] AND [app_baseline_to_date]
+        $$||_order_date||$$ BETWEEN 'app_baseline_from_date'::date AND 'app_baseline_to_date'::date
         --...or any open orders currently booked before cutoff....
-        OR ($$||_order_status||$$ IN ([app_openstatus_code]) and $$||_order_date||$$ <= [app_openorder_cutoff])
+        OR ($$||_order_status||$$ IN (app_openstatus_code) and $$||_order_date||$$ <= 'app_openorder_cutoff'::date)
         --...or anything that shipped in that period
-        OR ($$||_ship_date||$$ BETWEEN [app_baseline_from_date] AND [app_baseline_to_date])
+        OR ($$||_ship_date||$$ BETWEEN 'app_baseline_from_date'::date AND 'app_baseline_to_date'::date)
     )
     --be sure to pre-exclude unwanted items, like canceled orders, non-gross sales, and short-ships
 $$::text
@@ -132,7 +132,7 @@ $$
 FROM
     fc.live o$$||E'\n'||_perd_joins||$$
 WHERE
-    $$||_order_date||$$ BETWEEN [app_plug_fromdate] AND [app_plug_todate]
+    $$||_order_date||$$ BETWEEN 'app_plug_fromdate'::date AND 'app_plug_todate'::date
     --be sure to pre-exclude unwanted items, like canceled orders, non-gross sales, and short-ships
 $$ 
 INTO
@@ -141,8 +141,9 @@ INTO
 ------------------------------copy a full year and increment by 1 year for the baseline-------------------------
 
 SELECT
-$$INSERT INTO 
-    fc.live
+--$$INSERT INTO 
+--    fc.live
+$$,incr AS (
 SELECT
     $$||_clist_inc||
     $$
@@ -150,9 +151,16 @@ SELECT
     ,'baseline' iter
 FROM
     baseline o$$||E'\n'||_perd_joins||$$
+)
+INSERT INTO
+    fc.live
+SELECT
+    *
+FROM
+    incr i
 WHERE
-    $$||_order_date||' >= [app_first_forecast_date]'||$$
-    OR $$||_ship_date||' >= [app_first_forecast_date]'
+    i.$$||_order_date||$$ >= 'app_first_forecast_date'::date$$||$$
+    OR i.$$||_ship_date||$$ >= 'app_first_forecast_date'::date$$
     --any orders in the forecast period, or any sales in the forecast period (from open orders)
 INTO
     _baseline;
