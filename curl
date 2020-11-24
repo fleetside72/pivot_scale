@@ -1,1 +1,1 @@
-curl -H Content-Type: application/json -X GET -d@./sample_request.json https://192.168.1.110:8082/baseline --insecure
+curl -H "Content-Type: application/json" -X GET -d@./sample_request.json https://localhost:8082/baseline --insecure > baseline.sql
