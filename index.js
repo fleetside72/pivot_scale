@@ -62,22 +62,13 @@ server.get('/baseline', bodyParser.json(), function(req, res) {
         }
     });
 
-    //list of parameters that will need to be supplied from the app
-    //app_baseline_from_date
-    //app_baseline_to_date
-    //app_first_forecast_date
-    //app_openorder_cutoff
-    //app_openstatus_code
-    //app_plug_fromdate
-    //app_plug_todate
-
-    var app_baseline_from_date = '2020-06-01';
-    var app_baseline_to_date = '2020-09-30';
-    var app_first_forecast_date = '2021-06-01';
-    var app_openorder_cutoff = '2020-09-30';
-    var app_openstatus_code = "'OPEN','BACKORDER'";
-    var app_plug_fromdate = '2020-10-01'; 
-    var app_plug_todate = '2020-05-30';
+    var app_baseline_from_date =        req.body.app_baseline_from_date;
+    var app_baseline_to_date =          req.body.app_baseline_to_date;
+    var app_first_forecast_date =       req.body.app_first_forecast_date;
+    var app_openorder_cutoff =          req.body.app_openorder_cutoff;
+    var app_plug_fromdate =             req.body.app_plug_fromdate;
+    var app_plug_todate =               req.body.app_plug_todate;
+    var app_openstatus_code =           req.body.app_openstatus_code;
 
     var callback = function(arg) {
         sql = arg;
@@ -86,13 +77,13 @@ server.get('/baseline', bodyParser.json(), function(req, res) {
         console.log(req.body);
         //parse the where clause into the main sql statement
         //sql = sql.replace(new RegExp("where_clause", 'g'), w)
-        sql = sql.replace(new RegExp("app_baseline_from_date"), app_baseline_from_date);
-        sql = sql.replace(new RegExp("app_baseline_to_date"), app_baseline_from_date);
-        sql = sql.replace(new RegExp("app_first_forecast_date"), app_first_forecast_date);
-        sql = sql.replace(new RegExp("app_openorder_cutoff"), app_baseline_from_date);
-        sql = sql.replace(new RegExp("app_openstatus_code"), app_baseline_from_date);
-        sql = sql.replace(new RegExp("app_plug_fromdate"), app_plug_fromdate);
-        sql = sql.replace(new RegExp("app_plug_todate"), app_plug_todate);
+        sql = sql.replace(new RegExp("app_baseline_from_date", 'g'),    app_baseline_from_date);
+        sql = sql.replace(new RegExp("app_baseline_to_date", 'g'),      app_baseline_to_date);
+        sql = sql.replace(new RegExp("app_first_forecast_date", 'g'),   app_first_forecast_date);
+        sql = sql.replace(new RegExp("app_openorder_cutoff", 'g'),      app_openorder_cutoff);
+        sql = sql.replace(new RegExp("app_openstatus_code", 'g'),       app_openstatus_code);
+        sql = sql.replace(new RegExp("app_plug_fromdate", 'g'),         app_plug_fromdate);
+        sql = sql.replace(new RegExp("app_plug_todate", 'g'),           app_plug_todate);
         //execute the sql and send the result
         args.push(req.body.app_baseline_from_date);
         console.log(sql);
