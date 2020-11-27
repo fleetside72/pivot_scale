@@ -37,7 +37,7 @@ Postgres.connect();
 Postgres.FirstRow = function(inSQL, args, inResponse) {
     Postgres.query(inSQL, args, (err, res) => {
         if (err === null) {
-            inResponse.json(res.rows[0]);
+            inResponse.json(res[1].rows[0]);
             return;
         }
         console.log(err.stack);
