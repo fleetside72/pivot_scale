@@ -152,6 +152,7 @@ SELECT
 FROM
     baseline o$$||E'\n'||_perd_joins||$$
 )
+,ins AS (
 INSERT INTO
     fc.live
 SELECT
@@ -160,7 +161,10 @@ FROM
     incr i
 WHERE
     i.$$||_order_date||$$ >= 'app_first_forecast_date'::date$$||$$
-    OR i.$$||_ship_date||$$ >= 'app_first_forecast_date'::date$$
+    OR i.$$||_ship_date||$$ >= 'app_first_forecast_date'::date$$||$$
+RETURNING *
+)
+SELECT COUNT(*) num_rows  FROM ins$$
     --any orders in the forecast period, or any sales in the forecast period (from open orders)
 INTO
     _baseline;

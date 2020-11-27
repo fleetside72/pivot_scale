@@ -87,8 +87,8 @@ server.get('/baseline', bodyParser.json(), function(req, res) {
         //execute the sql and send the result
         args.push(req.body.app_baseline_from_date);
         console.log(sql);
-        res.send(sql); 
-        //Postgres.FirstRow(sql, [], res)
+        //res.send(sql); 
+        Postgres.FirstRow(sql, [], res)
     };
 })
 
