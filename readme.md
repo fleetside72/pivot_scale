@@ -33,6 +33,7 @@ TO-DO:
 - [ ] some of the app parameters can be consolidated, the baseline period could be one large range potentially, instead of 2 stacked periods
 - [x] setup something to fill in sql parameters to do testing on the function
 - [ ] update node to handle forecast name parameter
+- [ ] clean up SQL generation to prevent injection
 
 running problem list
 ----------------------------------------------------------------------------------------------------------------------------------------------------
