@@ -1,0 +1,13 @@
+SELECT
+    tname
+    ,cname
+    ,opos
+    ,func
+    ,fkey
+    ,pretty
+    ,dtype
+    ,mastcol
+    ,appcol
+    ,dateref
+FROM
+    fc.target_meta

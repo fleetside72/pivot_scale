@@ -34,6 +34,7 @@ TO-DO:
 - [x] setup something to fill in sql parameters to do testing on the function
 - [ ] update node to handle forecast name parameter
 - [ ] clean up SQL generation to prevent injection
+- [ ] calc status is hard-coded right now in the json request -> probably needs to be manuall supplied up front
 
 running problem list
 ----------------------------------------------------------------------------------------------------------------------------------------------------
