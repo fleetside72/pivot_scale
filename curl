@@ -1,1 +1,0 @@
-curl -H "Content-Type: application/json" -X GET -d@./sample_request.json https://localhost:8082/baseline --insecure > baseline.sql

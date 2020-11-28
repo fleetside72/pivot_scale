@@ -29,7 +29,7 @@ var Postgres = new pg.Client({
     port: process.env.port,
     database: process.env.database,
     ssl: false,
-    application_name: "osm_api"
+    application_name: "ps_api"
 });
 Postgres.connect();
 
@@ -52,7 +52,7 @@ server.get('/', (req, res) => res.send('pivotscale api is running'))
 server.get('/baseline', bodyParser.json(), function(req, res) {
 
     var sql = "";
-    var path = './route_sql/baseline.sql';
+    var path = './routes/baseline/baseline.sql';
     var args = [];
 
     fs.readFile(path, 'utf8', function(err, data) {
