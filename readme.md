@@ -28,13 +28,16 @@ route baseline
 * regular updates to baseline may be required to keep up with canceled/altered orders
 * copy some period of actual sales and increment all the dates to serve as a baseline forecast
 
-TO-DO:
 - [x] join to period tables to populate season; requires variance number oof table joins, based on howmany date functions there are 🙄
 - [ ] some of the app parameters can be consolidated, the baseline period could be one large range potentially, instead of 2 stacked periods
 - [x] setup something to fill in sql parameters to do testing on the function
 - [ ] update node to handle forecast name parameter
-- [ ] clean up SQL generation to prevent injection
 - [ ] calc status is hard-coded right now in the json request -> probably needs to be manuall supplied up front
+- [ ] the sales data has to have a column for module
+
+scale
+----------------------------------------------------------------------------------------------------------------------------------------------------
+- [ ] how to handle a target value adjustment, which currency is it in?
 
 running problem list
 ----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -45,3 +48,5 @@ running problem list
     - [x] problem: the target sales data has to map have concepts like order_date, and the application needs to know which col is order date
         * add column called application hook
     - [ ] there is not currently any initial grouping to limit excess data from all the document# scenarios
+* general
+    - [ ] clean up SQL generation to prevent injection
