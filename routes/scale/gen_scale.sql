@@ -13,13 +13,32 @@ DECLARE
     _date_funcs jsonb;
     _perd_joins text;
     _interval interval;
+    _units_col text;
+    _value_col text;
 
 
 BEGIN
+-----------------populate application variables--------------------------------------------
+SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'order_date') INTO _order_date;
+SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'ship_date') INTO _ship_date;
+SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'order_status') INTO _order_status;
+SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'units') INTO _units_col;
+SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'value') INTO _value_col;
+-------------------------all columns except value and units--------------------------------
+SELECT 
+    string_agg('o.'||format('%I',cname),E'\n    ,' ORDER BY opos ASC)
+INTO
+    _clist
+FROM 
+    fc.target_meta 
+WHERE 
+    func NOT IN ('version');
 
 SELECT
+---------$$app_req$$ will hold the request body--------------------
 $$WITH
 req AS  (SELECT $$||'$$app_req$$::jsonb)'||$$
+-----this block is supposed to test for new products that might not be in baseline etc-------
 test AS (
     SELECT
         sum(app_units) FILTER WHERE (version <> 'ACTUALS') total
@@ -29,10 +48,23 @@ test AS (
     WHERE
         app_where
 )
+,basemix AS (
+SELECT
+    $$||_clist||$$
+WHERE
+    app_scenario
+),
+vscale AS (
+    SELECT
+        app_vincr AS target_increment
+        ,sum($$||_units_col||') AS '||units||$$
+        ,app_vincr/sum($$||_units_col||$$) factor
+)$$
+INTO
+    _sql;
 
-
-SELECT 'HI' into    _sql;
-
+RAISE NOTICE '%', _sql;
+    
 INSERT INTO fc.sql SELECT 'scale', _sql ON CONFLICT ON CONSTRAINT sql_pkey  DO UPDATE SET t = EXCLUDED.t;
 
 END
