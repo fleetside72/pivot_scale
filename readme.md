@@ -33,7 +33,7 @@ route baseline
 - [x] setup something to fill in sql parameters to do testing on the function
 - [ ] update node to handle forecast name parameter
 - [ ] calc status is hard-coded right now in the json request -> probably needs to be manuall supplied up front
-- [ ] the sales data has to have a column for module
+- [ ] **the sales data has to have a column for module**
 
 scale
 ----------------------------------------------------------------------------------------------------------------------------------------------------
