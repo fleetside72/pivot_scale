@@ -3,6 +3,7 @@ $func$
 DECLARE
     _clist text;
     _clist_vol text;
+    _clist_prc text;
     _clist_inc text;
     _ytdbody text;
     _order_date text;
@@ -34,7 +35,7 @@ FROM
     fc.target_meta 
 WHERE 
     func NOT IN ('version');
--------------------------all columns except scale-------------------------------------------
+-------------------------all columns except volume scale-----------------------------------
 SELECT 
     string_agg(
         --create the column reference
@@ -47,6 +48,27 @@ SELECT
     )
 INTO
     _clist_vol
+FROM 
+    fc.target_meta 
+WHERE 
+    func NOT IN ('version');
+
+ -------------------------all columns except volume scale-----------------------------------
+SELECT 
+    string_agg(
+        --create the column reference
+        CASE 
+            WHEN appcol IN ('units', 'cost') THEN '0::numeric'
+            WHEN appcol IN ('value') THEN $$(CASE WHEN pscale.factor = 0 THEN o.$$||_units_col||$$ * pscale.mod_price ELSE o.$$||format('%I',cname)||' * pscale.factor END)::numeric AS '||_value_col
+            ELSE 'o.'||format('%I',cname)
+        END,
+        --delimiter
+        E'\n    ,' 
+        --sort column ordinal
+        ORDER BY opos ASC
+    )
+INTO
+    _clist_prc
 FROM 
     fc.target_meta 
 WHERE 
@@ -76,7 +98,7 @@ vscale AS (
     SELECT
         app_vincr AS target_increment
         ,sum($$||_units_col||') AS units'||$$
-        ,app_vincr/sum($$||_units_col||$$) factor
+        ,app_vincr/sum($$||_units_col||$$) AS factor
 )
 ,volume AS (
 SELECT
@@ -84,7 +106,37 @@ SELECT
 FROM
     baseline
     CROSS JOIN vscale
-)$$
+)
+,pscale AS (
+SELECT
+    app_pincr AS target_increment
+    ,sum($$||_value_col||') AS value'||$$
+    ,CASE WHEN (SELECT sum($$||_value_col||$$) FROM volume) = 0 THEN
+        --if the base value is -0- scaling will not work, need to generate price, factor goes to -0-
+        0
+    ELSE
+        --if the target dollar value still does not match the target increment, make this adjustment
+        ((SELECT pincr::numeric FROM target)-(SELECT sum($$||_value_col||$$) FROM volume))/(SELECT sum($$||_value_col||$$) FROM volume)
+    END factor
+    ,CASE WHEN (SELECT sum($$||_value_col||$$) FROM volume) = 0 THEN
+        CASE WHEN ((SELECT pincr::numeric FROM target) - (SELECT sum($$||_value_col||$$) FROM volume)) <> 0 THEN
+            --if the base value is -0- but the target value hasn't been achieved, derive a price to apply
+            ((SELECT pincr::numeric FROM target) - (SELECT sum($$||_value_col||$$) FROM volume))/(SELECT sum(units) FROM volume)
+        ELSE
+            0
+        END
+    ELSE
+        0
+    END mod_price
+)
+,pricing AS (
+SELECT
+    $$||_clist_prc||$$
+)
+INSERT INTO
+    fc.live
+SELECT * FROM volume UNION ALL SELECT * FROM pricing
+$$
 INTO
     _sql;
 
