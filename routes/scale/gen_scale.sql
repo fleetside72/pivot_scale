@@ -2,6 +2,7 @@ DO
 $func$
 DECLARE
     _clist text;
+    _clist_vol text;
     _clist_inc text;
     _ytdbody text;
     _order_date text;
@@ -24,11 +25,28 @@ SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'ship_date') INTO _ship_
 SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'order_status') INTO _order_status;
 SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'units') INTO _units_col;
 SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'value') INTO _value_col;
--------------------------all columns except value and units--------------------------------
+-------------------------all columns ------------------------------------------------------
 SELECT 
     string_agg('o.'||format('%I',cname),E'\n    ,' ORDER BY opos ASC)
 INTO
     _clist
+FROM 
+    fc.target_meta 
+WHERE 
+    func NOT IN ('version');
+-------------------------all columns except scale-------------------------------------------
+SELECT 
+    string_agg(
+        --create the column reference
+        'o.'||format('%I',cname)||
+        CASE WHEN appcol IN ('units', 'value', 'cost') THEN ' * vscale.factor' ELSE '' END,
+        --delimiter
+        E'\n    ,' 
+        --sort column ordinal
+        ORDER BY opos ASC
+    )
+INTO
+    _clist_vol
 FROM 
     fc.target_meta 
 WHERE 
@@ -57,8 +75,15 @@ WHERE
 vscale AS (
     SELECT
         app_vincr AS target_increment
-        ,sum($$||_units_col||') AS '||units||$$
+        ,sum($$||_units_col||') AS units'||$$
         ,app_vincr/sum($$||_units_col||$$) factor
+)
+,volume AS (
+SELECT
+    $$||_clist_vol||$$
+FROM
+    baseline
+    CROSS JOIN vscale
 )$$
 INTO
     _sql;
