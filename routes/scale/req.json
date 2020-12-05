@@ -23,6 +23,6 @@
     "tag": "standard price",
     "version": "b21",
     "type": "scale_vp",
-    "qty": 453.60,
-    "amount": 728.43624
+    "app_vincr": 453.60,
+    "app_pincr": 728.43624
 }

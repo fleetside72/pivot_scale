@@ -54,15 +54,7 @@ server.get('/baseline', bodyParser.json(), function(req, res) {
     var sql = "";
     var path = './routes/baseline/baseline.sql';
     var args = [];
-
-    fs.readFile(path, 'utf8', function(err, data) {
-        if (!err) {
-            callback(data);
-        } else {
-            console.log("fatal error pulling sql file")
-            callback(err);
-        }
-    });
+   
 
     var app_baseline_from_date =        req.body.app_baseline_from_date;
     var app_baseline_to_date =          req.body.app_baseline_to_date;
@@ -74,7 +66,6 @@ server.get('/baseline', bodyParser.json(), function(req, res) {
 
     var callback = function(arg) {
         sql = arg;
-
         console.log(new Date().toISOString() + "-------------------------baseline build-----------------------------")
         console.log(req.body);
         //parse the where clause into the main sql statement
@@ -92,4 +83,100 @@ server.get('/baseline', bodyParser.json(), function(req, res) {
         //res.send(sql); 
         Postgres.FirstRow(sql, [], res)
     };
+    
+    fs.readFile(path, 'utf8', function(err, data) {
+        if (!err) {
+            callback(data);
+        } else {
+            console.log("fatal error pulling sql file")
+            callback(err);
+        }
+    });
+
 })
+
+//------------scale a selected slice by the specified amounts-----------------------
+server.get('/scale', bodyParser.json(), function(req, res) {
+
+    var sql = "";
+    var w = ""; //holds the where
+    var c = 1;  //flag if body is empty
+    var d = 1;
+    var path = './routes/scale/scale.sql';
+    var args = [];
+   
+    var app_pincr    =  req.body.app_pincr;
+    var app_req      =  req.body.app_req;
+    var app_scenario =  req.body.app_scenario;
+    var app_units    =  req.body.app_units;
+    var app_vincr    =  req.body.app_vincr;
+
+    var callback = function(arg) {
+        sql = arg;
+        ({ c, w, d } = build_where(req, c, w, d, args));
+        //if there was no body sent, return with nothing
+        //if (c == 1) {
+        //    res.send("no body was sent");
+        //    return;
+        //}
+        console.log(new Date().toISOString() + "-------------------------baseline build-----------------------------")
+        console.log(req.body);
+        //parse the where clause into the main sql statement
+        //sql = sql.replace(new RegExp("where_clause", 'g'), w)
+        sql = sql.replace(new RegExp("app_pincr", 'g'),    app_pincr);
+        sql = sql.replace(new RegExp("app_req", 'g'),      app_req);
+        sql = sql.replace(new RegExp("app_scenario", 'g'), app_scenario);
+        sql = sql.replace(new RegExp("app_units", 'g'),    app_units);
+        sql = sql.replace(new RegExp("app_vincr", 'g'),    app_vincr);
+        sql = sql.replace(new RegExp("app_where", 'g'),    w);
+        //execute the sql and send the result
+        args.push(req.body.app_baseline_from_date);
+        console.log(sql);
+        res.send(sql); 
+        //Postgres.FirstRow(sql, [], res)
+    };
+    
+    fs.readFile(path, 'utf8', function(err, data) {
+        if (!err) {
+            callback(data);
+        } else {
+            console.log("fatal error pulling sql file")
+            callback(err);
+        }
+    });
+
+})
+
+function build_where(req, c, w, d, args) {
+    //loop through each top level item expected to be a simple key/value list reflecting the column and the target value
+    // "part":"XFRM500", "customer":"Sanford and Son" --> SQL -->     part = 'XFRM500'
+    //                                                            AND customer = 'Sanford and Son'
+    for (var i in req.body.scenario) {
+        //console.log(i);
+        ///console.log(req.body[i]);
+        //this step applies the AND seperator only
+        if (c > 1) {
+            w = w +
+                `
+            AND `;
+        }
+        if (Array.isArray(req.body.scenario[i])) {
+            //if the scenario key has a value that is an array of items, push it into an `IN` statement
+            //iter = [stage1, stage2]   -->  SQL  -->  iter IN ('stag1', stage2')
+            w = w + i + " IN (";
+            for (var j in req.body.scenario[i]) {
+                if (d > 1) {
+                    w = w + ",";
+                }
+                w = w + "'" + req.body.scenario[i][j] + "'";
+                d = d + 1;
+            }
+            w = w + ")";
+        } else {
+            w = w + i + " = '" + req.body.scenario[i] + "'";
+        }
+        args.push(req.body.scenario[i]);
+        c = c + 1;
+    };
+    return { c, w, d };
+}
