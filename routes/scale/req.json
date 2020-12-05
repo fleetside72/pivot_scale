@@ -1,19 +1,11 @@
 {
-    "scenario": {
-        "quota_rep_descr": "TINA PETTIGREW",
-        "substance": "Plastic",
+    "app_scenario": {
         "chan": "DIR",
-        "billto_group": "H&A MASTRONARDI",
-        "shipto_group": "H&A MASTRONARDI",
-        "majg_descr": "110 - INJECTION",
-        "part_descr": "HWA13000E21B025LZBLD - 13.00 WRAPT HP CHOCOLATE",
-        "version": "b21",
+        "account": "H&A MASTRONARDI",
+        "shipgrp": "H&A MASTRONARDI",
+        "part": "HWA13000E21B025LZBLD",
         "iter": [
-            "copy",
-            "adj volume",
-            "adj price",
-            "upload volume",
-            "upload price"
+            "baseline"
         ]   
     },  
     "stamp": "2020-02-19 17:03:38",
@@ -21,7 +13,7 @@
     "source": "adj",
     "message": "2% on volume and price",
     "tag": "standard price",
-    "version": "b21",
+    "version": "forecast_name",
     "type": "scale_vp",
     "app_vincr": 453.60,
     "app_pincr": 728.43624

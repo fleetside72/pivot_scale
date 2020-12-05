@@ -106,9 +106,7 @@ server.get('/scale', bodyParser.json(), function(req, res) {
     var args = [];
    
     var app_pincr    =  req.body.app_pincr;
-    var app_req      =  req.body.app_req;
-    var app_scenario =  req.body.app_scenario;
-    var app_units    =  req.body.app_units;
+    var app_req      =  JSON.stringify(req.body);
     var app_vincr    =  req.body.app_vincr;
 
     var callback = function(arg) {
@@ -125,8 +123,6 @@ server.get('/scale', bodyParser.json(), function(req, res) {
         //sql = sql.replace(new RegExp("where_clause", 'g'), w)
         sql = sql.replace(new RegExp("app_pincr", 'g'),    app_pincr);
         sql = sql.replace(new RegExp("app_req", 'g'),      app_req);
-        sql = sql.replace(new RegExp("app_scenario", 'g'), app_scenario);
-        sql = sql.replace(new RegExp("app_units", 'g'),    app_units);
         sql = sql.replace(new RegExp("app_vincr", 'g'),    app_vincr);
         sql = sql.replace(new RegExp("app_where", 'g'),    w);
         //execute the sql and send the result
@@ -151,7 +147,7 @@ function build_where(req, c, w, d, args) {
     //loop through each top level item expected to be a simple key/value list reflecting the column and the target value
     // "part":"XFRM500", "customer":"Sanford and Son" --> SQL -->     part = 'XFRM500'
     //                                                            AND customer = 'Sanford and Son'
-    for (var i in req.body.scenario) {
+    for (var i in req.body.app_scenario) {
         //console.log(i);
         ///console.log(req.body[i]);
         //this step applies the AND seperator only
@@ -160,22 +156,22 @@ function build_where(req, c, w, d, args) {
                 `
             AND `;
         }
-        if (Array.isArray(req.body.scenario[i])) {
+        if (Array.isArray(req.body.app_scenario[i])) {
             //if the scenario key has a value that is an array of items, push it into an `IN` statement
             //iter = [stage1, stage2]   -->  SQL  -->  iter IN ('stag1', stage2')
             w = w + i + " IN (";
-            for (var j in req.body.scenario[i]) {
+            for (var j in req.body.app_scenario[i]) {
                 if (d > 1) {
                     w = w + ",";
                 }
-                w = w + "'" + req.body.scenario[i][j] + "'";
+                w = w + "'" + req.body.app_scenario[i][j] + "'";
                 d = d + 1;
             }
             w = w + ")";
         } else {
-            w = w + i + " = '" + req.body.scenario[i] + "'";
+            w = w + i + " = '" + req.body.app_scenario[i] + "'";
         }
-        args.push(req.body.scenario[i]);
+        args.push(req.body.app_scenario[i]);
         c = c + 1;
     };
     return { c, w, d };

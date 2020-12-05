@@ -1,10 +1,10 @@
 WITH
 req AS  (SELECT $$app_req$$::jsonb)
 -----this block is supposed to test for new products that might not be in baseline etc-------
-test AS (
+,test AS (
     SELECT
-        sum(app_units) FILTER WHERE (version <> 'ACTUALS') total
-        ,sum(app_units) FILTER (WHERE iter = 'baseline') base
+        sum(fb_qty) FILTER (WHERE version <> 'ACTUALS') total
+        ,sum(fb_qty) FILTER (WHERE iter = 'baseline') base
     FROM
         fc.live
     WHERE
@@ -113,14 +113,18 @@ SELECT
     ,o.rseas
     ,o.sdate
     ,o.sseas
+FROM
+    fc.live o 
 WHERE
-    app_scenario
+    app_where
 ),
 vscale AS (
     SELECT
         app_vincr AS target_increment
         ,sum(fb_qty) AS units
         ,app_vincr/sum(fb_qty) AS factor
+    FROM
+        basemix
 )
 ,volume AS (
 SELECT
@@ -208,13 +212,13 @@ SELECT
     ,o.r_rate
     ,o.c_currency
     ,o.c_rate
-    ,o.fb_qty * vscale.factor
-    ,o.fb_val_loc * vscale.factor
+    ,o.fb_qty * vscale.factor AS fb_qty
+    ,o.fb_val_loc * vscale.factor AS fb_val_loc
     ,o.fb_val_loc_dis
     ,o.fb_val_loc_qt
     ,o.fb_val_loc_pl
     ,o.fb_val_loc_tar
-    ,o.fb_cst_loc * vscale.factor
+    ,o.fb_cst_loc * vscale.factor AS fb_cst_loc
     ,o.fb_cst_loc_cur
     ,o.fb_cst_loc_fut
     ,o.calc_status
@@ -226,7 +230,7 @@ SELECT
     ,o.sdate
     ,o.sseas
 FROM
-    baseline
+    basemix o
     CROSS JOIN vscale
 )
 ,pscale AS (
@@ -250,6 +254,8 @@ SELECT
     ELSE
         0
     END mod_price
+FROM
+    volume
 )
 ,pricing AS (
 SELECT

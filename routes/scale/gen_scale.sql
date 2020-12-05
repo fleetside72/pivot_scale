@@ -40,7 +40,7 @@ SELECT
     string_agg(
         --create the column reference
         'o.'||format('%I',cname)||
-        CASE WHEN appcol IN ('units', 'value', 'cost') THEN ' * vscale.factor' ELSE '' END,
+        CASE WHEN appcol IN ('units', 'value', 'cost') THEN ' * vscale.factor AS '||format('%I',cname) ELSE '' END,
         --delimiter
         E'\n    ,' 
         --sort column ordinal
@@ -79,10 +79,10 @@ SELECT
 $$WITH
 req AS  (SELECT $$||'$$app_req$$::jsonb)'||$$
 -----this block is supposed to test for new products that might not be in baseline etc-------
-test AS (
+,test AS (
     SELECT
-        sum(app_units) FILTER WHERE (version <> 'ACTUALS') total
-        ,sum(app_units) FILTER (WHERE iter = 'baseline') base
+        sum($$||_units_col||$$) FILTER (WHERE version <> 'ACTUALS') total
+        ,sum($$||_units_col||$$) FILTER (WHERE iter = 'baseline') base
     FROM
         fc.live
     WHERE
@@ -91,20 +91,24 @@ test AS (
 ,basemix AS (
 SELECT
     $$||_clist||$$
+FROM
+    fc.live o 
 WHERE
-    app_scenario
+    app_where
 ),
 vscale AS (
     SELECT
         app_vincr AS target_increment
         ,sum($$||_units_col||') AS units'||$$
         ,app_vincr/sum($$||_units_col||$$) AS factor
+    FROM
+        basemix
 )
 ,volume AS (
 SELECT
     $$||_clist_vol||$$
 FROM
-    baseline
+    basemix o
     CROSS JOIN vscale
 )
 ,pscale AS (
@@ -128,6 +132,8 @@ SELECT
     ELSE
         0
     END mod_price
+FROM
+    volume
 )
 ,pricing AS (
 SELECT
