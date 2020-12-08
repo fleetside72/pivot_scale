@@ -236,6 +236,8 @@ SELECT
     ,o.rseas
     ,o.sdate
     ,o.sseas
+    ,'forecast name' AS version
+    ,'scale vol' AS iter
 FROM
     basemix o
     CROSS JOIN vscale
@@ -367,6 +369,8 @@ SELECT
     ,o.rseas
     ,o.sdate
     ,o.sseas
+    ,'forecast name' AS version
+    ,'scale price' AS iter
 FROM
     volume o
     CROSS JOIN pscale
@@ -375,5 +379,13 @@ WHERE
 )
 INSERT INTO
     fc.live
-SELECT * FROM volume UNION ALL SELECT * FROM pricing
+SELECT 
+    * 
+FROM 
+    volume 
+UNION ALL 
+SELECT 
+    * 
+FROM 
+    pricing
 

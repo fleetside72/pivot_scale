@@ -114,6 +114,8 @@ vscale AS (
 ,volume AS (
 SELECT
     $$||_clist_vol||$$
+    ,'forecast name' AS version
+    ,'scale vol' AS iter
 FROM
     basemix o
     CROSS JOIN vscale
@@ -145,6 +147,8 @@ FROM
 ,pricing AS (
 SELECT
     $$||_clist_prc||$$
+    ,'forecast name' AS version
+    ,'scale price' AS iter
 FROM
     volume o
     CROSS JOIN pscale
@@ -153,7 +157,15 @@ WHERE
 )
 INSERT INTO
     fc.live
-SELECT * FROM volume UNION ALL SELECT * FROM pricing
+SELECT 
+    * 
+FROM 
+    volume 
+UNION ALL 
+SELECT 
+    * 
+FROM 
+    pricing
 $$
 INTO
     _sql;
