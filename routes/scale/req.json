@@ -1,9 +1,8 @@
 {
     "app_scenario": {
-        "chan": "DIR",
-        "account": "H&A MASTRONARDI",
-        "shipgrp": "H&A MASTRONARDI",
-        "part": "HWA13000E21B025LZBLD",
+        "chan": "WHS",
+        "account": "GRIFFIN",
+        "part": "XNS0T1G3G18B096",
         "iter": [
             "baseline"
         ]   
@@ -15,6 +14,6 @@
     "tag": "standard price",
     "version": "forecast_name",
     "type": "scale_vp",
-    "app_vincr": 453.60,
-    "app_pincr": 728.43624
+    "app_vincr": 20000,
+    "app_pincr": 10000
 }
