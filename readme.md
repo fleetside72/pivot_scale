@@ -36,7 +36,7 @@ route baseline
 
 scale
 ----------------------------------------------------------------------------------------------------------------------------------------------------
-- [ ] need to add version columns to all CTE's
+- [x] need to add version columns to all CTE's
 - [ ] need to build log insert
 - [x] Need to build where clause for scenario
 
