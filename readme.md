@@ -33,12 +33,10 @@ route baseline
 - [x] setup something to fill in sql parameters to do testing on the function
 - [ ] update node to handle forecast name parameter
 - [ ] calc status is hard-coded right now in the json request -> probably needs to be manuall supplied up front
-- [ ] **the sales data has to have a column for module**
 
 scale
 ----------------------------------------------------------------------------------------------------------------------------------------------------
-- [ ] how to handle a target value adjustment, which currency is it in?
-- [ ] need to add version columns CTE's
+- [ ] need to add version columns to all CTE's
 - [ ] need to build log insert
 - [x] Need to build where clause for scenario
 
@@ -53,3 +51,5 @@ running problem list
     - [ ] there is not currently any initial grouping to limit excess data from all the document# scenarios
 * general
     - [ ] clean up SQL generation to prevent injection
+    - [ ] **the sales data has to have a column for module and change ID, live sales data isn't going to work well**
+    - [ ] how to handle a target value adjustment, which currency is it in?
