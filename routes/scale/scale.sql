@@ -1,5 +1,12 @@
 WITH
-req AS  (SELECT $$app_req$$::jsonb)
+req AS  (SELECT $$app_req$$::jsonb j)
+,target AS (
+    SELECT
+        (req.j->>'vincr')::numeric vincr   --volume
+        ,(req.j->>'pincr')::numeric pincr  --price
+    FROM
+        req
+)
 -----this block is supposed to test for new products that might not be in baseline etc-------
 ,test AS (
     SELECT
@@ -120,9 +127,9 @@ WHERE
 ),
 vscale AS (
     SELECT
-        app_vincr AS target_increment
+        (SELECT vincr FROM target) AS target_increment
         ,sum(fb_qty) AS units
-        ,app_vincr/sum(fb_qty) AS factor
+        ,(SELECT vincr FROM target)/sum(fb_qty) AS factor
     FROM
         basemix
 )
@@ -235,19 +242,19 @@ FROM
 )
 ,pscale AS (
 SELECT
-    app_pincr AS target_increment
+    (SELECT pincr FROM target) AS target_increment
     ,sum(fb_val_loc) AS value
     ,CASE WHEN (SELECT sum(fb_val_loc) FROM volume) = 0 THEN
         --if the base value is -0- scaling will not work, need to generate price, factor goes to -0-
         0
     ELSE
         --if the target dollar value still does not match the target increment, make this adjustment
-        ((SELECT pincr::numeric FROM target)-(SELECT sum(fb_val_loc) FROM volume))/(SELECT sum(fb_val_loc) FROM volume)
+        ((SELECT pincr FROM target)-(SELECT sum(fb_val_loc) FROM volume))/(SELECT sum(fb_val_loc) FROM volume)
     END factor
     ,CASE WHEN (SELECT sum(fb_val_loc) FROM volume) = 0 THEN
         CASE WHEN ((SELECT pincr::numeric FROM target) - (SELECT sum(fb_val_loc) FROM volume)) <> 0 THEN
             --if the base value is -0- but the target value hasn't been achieved, derive a price to apply
-            ((SELECT pincr::numeric FROM target) - (SELECT sum(fb_val_loc) FROM volume))/(SELECT sum(units) FROM volume)
+            ((SELECT pincr::numeric FROM target) - (SELECT sum(fb_val_loc) FROM volume))/(SELECT sum(fb_qty) FROM volume)
         ELSE
             0
         END
@@ -360,6 +367,11 @@ SELECT
     ,o.rseas
     ,o.sdate
     ,o.sseas
+FROM
+    volume o
+    CROSS JOIN pscale
+WHERE
+    pscale.factor <> 0 or pscale.mod_price <> 0
 )
 INSERT INTO
     fc.live

@@ -121,9 +121,9 @@ server.get('/scale', bodyParser.json(), function(req, res) {
         console.log(JSON.stringify(req.body));
         //parse the where clause into the main sql statement
         //sql = sql.replace(new RegExp("where_clause", 'g'), w)
-        sql = sql.replace(new RegExp("app_pincr", 'g'),    app_pincr);
+        //sql = sql.replace(new RegExp("app_pincr", 'g'),    app_pincr);
         sql = sql.replace(new RegExp("app_req", 'g'),      app_req);
-        sql = sql.replace(new RegExp("app_vincr", 'g'),    app_vincr);
+        //sql = sql.replace(new RegExp("app_vincr", 'g'),    app_vincr);
         sql = sql.replace(new RegExp("app_where", 'g'),    w);
         //execute the sql and send the result
         args.push(req.body.app_baseline_from_date);
