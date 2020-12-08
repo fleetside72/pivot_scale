@@ -5,3 +5,4 @@ old_*
 node_modules/
 .env
 *.pem
+*temp*
