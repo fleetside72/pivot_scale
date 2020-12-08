@@ -1,7 +1,7 @@
 --assumes schema fc already exists
 
-DROP TABLE IF EXISTS fc.target_meta;
-CREATE TABLE fc.target_meta (
+--DROP TABLE IF EXISTS fc.target_meta;
+CREATE TABLE IF NOT EXISTS fc.target_meta (
     tname       text
     ,cname      text
     ,opos       int
@@ -15,7 +15,7 @@ CREATE TABLE fc.target_meta (
 );
 
 --ALTER TABLE fc.target_meta DROP CONSTRAINT IF EXISTS target_meta_pk;
-ALTER TABLE fc.target_meta ADD CONSTRAINT target_meta_pk PRIMARY KEY (tname, cname);
+ALTER TABLE fc.target_meta ADD CONSTRAINT IF NOT EXISTS target_meta_pk PRIMARY KEY (tname, cname);
 
 COMMENT ON TABLE fc.target_meta IS 'target table layout info';
 COMMENT ON COLUMN fc.target_meta.tname IS 'schema.table_name of target sales data table';
@@ -28,3 +28,10 @@ COMMENT ON COLUMN fc.target_meta.dtype IS 'data type of the sales table column';
 COMMENT ON COLUMN fc.target_meta.mastcol IS 'associated field from the master data table if it is different (oseas would refer to ssyr in fc.perd)';
 COMMENT ON COLUMN fc.target_meta.appcol IS 'supply column name to be used for application variables - (specifcy the order date column)';
 COMMENT ON COLUMN fc.target_meta.dateref IS 'reference to the relevant hard coded perd table column for dates';
+
+CREATE TABLE IF NOT EXISTS fc.log  (
+    id int GENERATED ALWAYS AS IDENTITY
+    ,doc jsonb
+);
+
+COMMENT ON TABLE fc.log IS 'forecast change log';

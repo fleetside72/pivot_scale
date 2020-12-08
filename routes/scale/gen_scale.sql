@@ -111,6 +111,14 @@ vscale AS (
     FROM
         basemix
 )
+,ilog AS (
+    INSERT INTO
+        fc.log (doc)
+    SELECT
+        req.j 
+    FROM
+        req
+)
 ,volume AS (
 SELECT
     $$||_clist_vol||$$

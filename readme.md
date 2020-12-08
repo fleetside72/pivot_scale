@@ -51,5 +51,6 @@ running problem list
     - [ ] there is not currently any initial grouping to limit excess data from all the document# scenarios
 * general
     - [ ] clean up SQL generation to prevent injection
-    - [ ] **the sales data has to have a column for module and change ID, live sales data isn't going to work well**
     - [ ] how to handle a target value adjustment, which currency is it in?
+    - [ ] **the sales data has to have a column for module and change ID, live sales data isn't going to work well**
+        - [ ] need to target the live sales data, build build a whole new table to use it plus add version columns
