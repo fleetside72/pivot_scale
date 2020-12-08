@@ -40,8 +40,7 @@ scale
 - [ ] how to handle a target value adjustment, which currency is it in?
 - [ ] need to add version columns CTE's
 - [ ] need to build log insert
-- [x] `Need to build where clause for scenari`
-    * no working currently
+- [x] Need to build where clause for scenario
 
 running problem list
 ----------------------------------------------------------------------------------------------------------------------------------------------------
