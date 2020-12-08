@@ -118,7 +118,7 @@ server.get('/scale', bodyParser.json(), function(req, res) {
         //    return;
         //}
         console.log(new Date().toISOString() + "-------------------------baseline build-----------------------------")
-        console.log(req.body);
+        console.log(JSON.stringify(req.body));
         //parse the where clause into the main sql statement
         //sql = sql.replace(new RegExp("where_clause", 'g'), w)
         sql = sql.replace(new RegExp("app_pincr", 'g'),    app_pincr);
