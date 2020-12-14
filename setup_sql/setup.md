@@ -1,3 +1,12 @@
+setup function
+
+0. run `schema.sql` to create the application tables
+1. run `target_info` to get the column info for the target
+2. manually map the columns to the app entities and parameters
+3. run `clone_target.sql` to clone the target data and create any app columns not designated
+3. run `build_master_tables.sql` to build the functional tables (ex. customer master)
+4. run `perd.sql` to buil a static hard-coded notion of how periods are defined
+
 | tname   | cname          | opos | func         | fkey         | pretty | dtype   | mastcol        | appcol       | dateref |
 | ------- | -------------- | ---- | ------------ | ------------ | ------ | ------- | -------------- | ------------ | ------- |
 | fc.live | fb_cst_loc     | 91   | cost         |              |        | numeric | fb_cst_loc     |              |         |
