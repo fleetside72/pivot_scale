@@ -1,3 +1,15 @@
+required columns in target data:
+* value
+* cost
+* units
+* order_date
+* ship_date
+* order_status
+* customer
+* item
+
+
+
 setup function
 
 0. run `schema.sql` to create the application tables
