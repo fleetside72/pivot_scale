@@ -2,13 +2,14 @@ required columns in target data:
 * value
 * cost
 * units
-* order_date
+* order_date 
 * ship_date
-* order_status
-* customer
-* item
-
-
+* order_status  (default to 'CLOSED')
+* version       (defatult to 'ACTUALS')
+* iteration     (default to 'ACTUALS')
+* logid         (default to null)
+* tag           (default to null)
+* comment       (default to null)
 
 setup function
 
