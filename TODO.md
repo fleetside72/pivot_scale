@@ -54,5 +54,6 @@ running problem list
     - [ ] how to handle a target value adjustment, which currency is it in?
     - [ ] **the sales data has to have a column for module and change ID, live sales data isn't going to work well**
         - [x] need to target the live sales data, build build a whole new table to use it plus add version columns
-        - [ ] re-run `target_info` after building the clone, but targeting the clone
-        - [ ] need to finalize the name of the clone table and reqork the routes to target this name
+        - [x] re-run `target_info` after building the clone, but targeting the clone
+        - [x] need to finalize the name of the clone table and reqork the routes to target this name
+        - [ ] need to re-run the quote sql builders to make sure they work with multiple tables in target_meta
