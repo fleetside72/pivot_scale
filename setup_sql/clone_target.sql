@@ -15,11 +15,19 @@ FROM
     fc.target_meta;
 -------------------------------build a column list-----------------------------------------
 SELECT 
-    string_agg('o.'||format('%I',cname),E'\n    ,' ORDER BY opos ASC)
+    string_agg(
+        CASE WHEN m.cname IS NULL
+            THEN COALESCE(a.dflt,'null::'||a.dtype)||' AS _'||a.col
+            ELSE 'o.'||format('%I',COALESCE(cname,''))
+        END
+        ,E'\n    ,' ORDER BY opos ASC)
 INTO
     _clist
 FROM 
-    fc.target_meta;
+    fc.target_meta m
+    FULL OUTER JOIN fc.appcols a ON
+        m.appcol = a.col
+        AND m.dtype = a.dtype;
 
 _sql:= $$CREATE TABLE IF NOT EXISTS fc.live AS (
 SELECT
