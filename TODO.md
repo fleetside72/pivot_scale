@@ -55,3 +55,4 @@ running problem list
     - [ ] **the sales data has to have a column for module and change ID, live sales data isn't going to work well**
         - [x] need to target the live sales data, build build a whole new table to use it plus add version columns
         - [ ] re-run `target_info` after building the clone, but targeting the clone
+        - [ ] need to finalize the name of the clone table and reqork the routes to target this name
