@@ -35,6 +35,9 @@ $$||_clist||$$
 FROM
     $$||_targ;
 
-RAISE NOTICE '%', _sql;
+--RAISE NOTICE '%', _sql;
+
+INSERT INTO fc.sql SELECT 'clone', _sql ON CONFLICT ON CONSTRAINT sql_pkey  DO UPDATE SET t = EXCLUDED.t;
+
 END;
 $func$
