@@ -36,26 +36,29 @@ CREATE TABLE IF NOT EXISTS fc.appcols (
     required boolean,
     dflt text
 );
-ALTER TABLE fc.appcols DROP CONSTRAINT IF EXISTS appcols_pkey;
+ALTER TABLE fc.appcols DROP CONSTRAINT IF EXISTS appcols_pkey CASCADE;
 ALTER TABLE fc.appcols ADD CONSTRAINT appcols_pkey PRIMARY KEY (col, dtype);
 COMMENT ON TABLE fc.appcols IS 'hard-coded columns names searched for by the application';
 INSERT INTO 
     fc.appcols (col, dtype, required, dflt) 
 VALUES 
     ('value'        ,'numeric',true,    null),
-    ('cost'         ,'numeric',false,   '0'),
-    ('units'        ,'numeric',false,   '0'),
+    ('cost'         ,'numeric',true,   '0'),
+    ('units'        ,'numeric',true,   '0'),
     ('order_date'   ,'date'   ,true,    null),
     ('ship_date'    ,'date'   ,false,   null),
-    ('order_status' ,'text'   ,false,   'CLOSED'),
-    ('version'      ,'text'   ,false,   'ACTUALS'),
-    ('iteration'    ,'text'   ,false,   'ACTUALS'),
-    ('logid'        ,'integer',false,   null),
-    ('tag'          ,'text'   ,false,   null),
-    ('comment'      ,'text'   ,false,   null),
+    ('order_status' ,'text'   ,true,   'CLOSED'),
+    ('version'      ,'text'   ,true,   'ACTUALS'),
+    ('iteration'    ,'text'   ,true,   'ACTUALS'),
+    ('logid'        ,'integer',true,   null),
+    ('tag'          ,'text'   ,true,   null),
+    ('comment'      ,'text'   ,true,   null),
     ('customer'     ,'text'   ,false,   null),
     ('item'         ,'text'   ,false,   null)
-ON CONFLICT ON CONSTRAINT appcols_pkey DO NOTHING;
+ON CONFLICT ON CONSTRAINT appcols_pkey DO UPDATE SET
+    dtype = EXCLUDED.dtype
+    ,required = EXCLUDED.required
+    ,dflt = EXCLUDED.dflt;
 
 ALTER TABLE fc.target_meta ADD CONSTRAINT fk_appcol FOREIGN KEY (appcol,dtype) REFERENCES fc.appcols(col, dtype);
 
