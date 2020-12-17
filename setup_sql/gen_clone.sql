@@ -33,7 +33,8 @@ _sql:= $$CREATE TABLE IF NOT EXISTS fc.live AS (
 SELECT
 $$||_clist||$$
 FROM
-    $$||_targ;
+    $$||_targ||$$
+) WITH DATA;$$;
 
 --RAISE NOTICE '%', _sql;
 
