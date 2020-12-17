@@ -15,8 +15,9 @@ FROM
     information_schema.columns 
 WHERE 
     --target current sales table assuming it exists in current database, will need revised in short order
-    table_name = 'rlarp' 
-    AND table_schema = 'osm_dev'
+    --after inital clone, need to re-run this with the fc.live to be added to the meta table
+    table_name = 'live'
+    AND table_schema = 'fc'
 ON CONFLICT ON CONSTRAINT target_meta_pk DO UPDATE SET
     opos = EXCLUDED.opos
     ,dtype = EXCLUDED.dtype;

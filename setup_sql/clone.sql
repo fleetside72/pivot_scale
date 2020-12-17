@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS fc.clone AS (
+CREATE TABLE IF NOT EXISTS fc.live AS (
 SELECT
 o."ddord#"
     ,o."dditm#"

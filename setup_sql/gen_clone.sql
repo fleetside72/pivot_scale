@@ -12,7 +12,9 @@ SELECT
 INTO
     _targ
 FROM
-    fc.target_meta;
+    fc.target_meta
+WHERE
+    tname = 'rlarp.osm_dev';
 -------------------------------build a column list-----------------------------------------
 SELECT 
     string_agg(
@@ -27,7 +29,9 @@ FROM
     fc.target_meta m
     FULL OUTER JOIN fc.appcols a ON
         m.appcol = a.col
-        AND m.dtype = a.dtype;
+        AND m.dtype = a.dtype
+WHERE
+    tname = 'rlarp.osm_dev';
 
 _sql:= $$CREATE TABLE IF NOT EXISTS fc.live AS (
 SELECT
@@ -38,7 +42,7 @@ FROM
 
 --RAISE NOTICE '%', _sql;
 
-INSERT INTO fc.sql SELECT 'clone', _sql ON CONFLICT ON CONSTRAINT sql_pkey  DO UPDATE SET t = EXCLUDED.t;
+INSERT INTO fc.sql SELECT 'live', _sql ON CONFLICT ON CONSTRAINT sql_pkey  DO UPDATE SET t = EXCLUDED.t;
 
 END;
 $func$
