@@ -6,15 +6,12 @@ DECLARE
     _sql text;
 
 BEGIN
-
+-----------------------------this target would be replaced with a parameter--------------
 SELECT
-    MAX(tname)||' o'
+    'rlarp.osm_dev o'
 INTO
-    _targ
-FROM
-    fc.target_meta
-WHERE
-    tname = 'rlarp.osm_dev';
+    _targ;
+
 -------------------------------build a column list-----------------------------------------
 SELECT 
     string_agg(
@@ -31,7 +28,7 @@ FROM
         m.appcol = a.col
         AND m.dtype = a.dtype
 WHERE
-    tname = 'rlarp.osm_dev';
+    tname = _targ;
 
 _sql:= $$CREATE TABLE IF NOT EXISTS fc.live AS (
 SELECT

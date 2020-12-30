@@ -27,12 +27,12 @@ app_plug_todate
 BEGIN
 
 -----------------populate application variables--------------------------------------------
-SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'order_date') INTO _order_date;
-SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'ship_date') INTO _ship_date;
-SELECT (SELECT cname FROM fc.target_meta WHERE appcol = 'order_status') INTO _order_status;
+SELECT (SELECT cname FROM fc.target_meta WHERE tname = 'fc.live' AND appcol = 'order_date') INTO _order_date;
+SELECT (SELECT cname FROM fc.target_meta WHERE tname = 'fc.live' AND appcol = 'ship_date') INTO _ship_date;
+SELECT (SELECT cname FROM fc.target_meta WHERE tname = 'fc.live' AND appcol = 'order_status') INTO _order_status;
 --the target interval
 SELECT interval '1 year' INTO _interval;
-SELECT jsonb_agg(func) INTO _date_funcs FROM fc.target_meta WHERE dtype = 'date' AND fkey is NOT null;
+SELECT jsonb_agg(func) INTO _date_funcs FROM fc.target_meta WHERE tname = 'fc.live' AND dtype = 'date' AND fkey is NOT null;
 --create table join for each date based func in target_meta joining to fc.perd static table
 --the join, though, should be based on the target date, which is needs an interval added to get to the target
 SELECT
@@ -46,7 +46,8 @@ INTO
 FROM 
     fc.target_meta 
 WHERE 
-    dtype = 'date' 
+    tname = 'fc.live'
+    AND dtype = 'date' 
     AND fkey IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS fc.sql(cmd text PRIMARY KEY, t text );
@@ -59,7 +60,8 @@ INTO
 FROM 
     fc.target_meta 
 WHERE 
-    func NOT IN ('version');
+    tname = 'fc.live'
+    AND func NOT IN ('version');
 
 ---------------------------build column to increment dates---------------------------------
 
@@ -89,7 +91,8 @@ INTO
 FROM 
     fc.target_meta m
 WHERE 
-    func NOT IN ('version');
+    tname = 'fc.live'
+    AND func NOT IN ('version');
 
 --RAISE NOTICE 'build list: %',clist;
 

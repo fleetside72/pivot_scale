@@ -57,3 +57,4 @@ running problem list
         - [x] re-run `target_info` after building the clone, but targeting the clone
         - [x] need to finalize the name of the clone table and reqork the routes to target this name
         - [ ] need to re-run the quote sql builders to make sure they work with multiple tables in target_meta
+        - [ ] fc.live is getting re-populated to target_meta without the app columns that were specified in initial target

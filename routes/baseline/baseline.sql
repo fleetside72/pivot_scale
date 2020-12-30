@@ -103,6 +103,9 @@ SELECT
     ,o.rseas
     ,o.sdate
     ,o.sseas
+    ,o._comment
+    ,o._logid
+    ,o._tag
     ,'forecast_name' "version"
     ,'actuals' iter
 FROM
@@ -220,6 +223,9 @@ SELECT
     ,rdate.ssyr
     ,o.sdate + interval '1 year' AS sdate
     ,sdate.ssyr
+    ,o._comment
+    ,o._logid
+    ,o._tag
     ,'forecast_name' "version"
     ,'plug' iter
 FROM
@@ -337,6 +343,9 @@ SELECT
     ,rdate.ssyr
     ,o.sdate + interval '1 year' AS sdate
     ,sdate.ssyr
+    ,o._comment
+    ,o._logid
+    ,o._tag
     ,'forecast_name' "version"
     ,'baseline' iter
 FROM
