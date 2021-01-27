@@ -13,8 +13,12 @@ INTO
     _targ;
 
 -------------------------------build a column list-----------------------------------------
+-----------a list of required columns is in fc.appcols, if they are not present------------
+-----------they will have to build included------------------------------------------------
 SELECT 
     string_agg(
+        --if the colum name is empty that means we are dealig with a required appcol
+        --that isn't present: use the appcol.col for the name preceded by underscore
         CASE WHEN m.cname IS NULL
             THEN COALESCE(a.dflt,'null::'||a.dtype)||' AS _'||a.col
             ELSE 'o.'||format('%I',COALESCE(cname,''))
