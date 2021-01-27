@@ -56,5 +56,6 @@ running problem list
         - [x] need to target the live sales data, build build a whole new table to use it plus add version columns
         - [x] re-run `target_info` after building the clone, but targeting the clone
         - [x] need to finalize the name of the clone table and reqork the routes to target this name
+        - [x] fc.live is getting re-populated to target_meta without the newly created app columns
         - [ ] need to re-run the quote sql builders to make sure they work with multiple tables in target_meta
-        - [ ] fc.live is getting re-populated to target_meta without the newly created app columns
+        - [ ] need to add column to target_meta to specify the role of the `tname` (tracker, clone), and also maybe the relationship
